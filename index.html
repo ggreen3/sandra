@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Happy Birthday, Sandra!</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Lora:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="banner">
+        <h1>Dearest Sandra, A Grand Birthday Celebration</h1>
+        <p>Crafted with Love for Your Special Day</p>
+      </div>
+    </header>
+    <section class="gallery">
+      <h2>Your Radiant Moments</h2>
+      <div class="gallery-grid">
+        <div class="gallery-item"><img src="pic1.jpg" alt="Sandra's Picture 1" aria-label="Sandra's first memory"></div>
+        <div class="gallery-item"><img src="pic2.jpg" alt="Sandra's Picture 2" aria-label="Sandra's second memory"></div>
+        <div class="gallery-item"><img src="pic3.jpg" alt="Sandra's Picture 3" aria-label="Sandra's third memory"></div>
+        <div class="gallery-item"><img src="pic4.jpg" alt="Sandra's Picture 4" aria-label="Sandra's fourth memory"></div>
+        <div class="gallery-item"><video controls aria-label="Sandra's special video"><source src="vid1.mp4" type="video/mp4">Your browser does not support the video tag.</video></div>
+      </div>
+    </section>
+    <section class="memory-lane">
+      <h2>A Message from the Heart</h2>
+      <p id="memory-message">Sandra, your smile lights up my world like no other. Happy birthday, my muse! This site is my way of showing how much you mean to me. – [Your Name]</p>
+    </section>
+    <section class="chatbot">
+      <h2>Green, Your Devoted Admirer</h2>
+      <p>Chat with Green, who's head-over-heels for you, Sandra, and writes poems to make your heart flutter!</p>
+      <div id="chat-container">
+        <div id="chat-output" role="log" aria-live="polite"></div>
+        <div class="chat-inputs">
+          <input type="text" id="user-input" placeholder="Talk to Green..." aria-label="Chat with Green">
+          <select id="poem-style" aria-label="Select poem style">
+            <option value="romantic">Romantic</option>
+            <option value="sonnet">Sonnet</option>
+            <option value="haiku">Haiku</option>
+            <option value="free verse">Free Verse</option>
+          </select>
+          <button onclick="sendMessage()">Send</button>
+          <button onclick="generatePoem()">Write a Poem</button>
+          <button onclick="surprisePoem()">Surprise Me!</button>
+          <button onclick="retryApi()" id="retry-button" style="display: none;">Retry Connection</button>
+        </div>
+        <div id="poem-history">
+          <h3>Your Poems</h3>
+          <ul id="poem-list" role="list"></ul>
+        </div>
+      </div>
+    </section>
+    <section class="audio-control">
+      <button onclick="toggleMusic()" id="music-toggle" aria-label="Toggle background music">Play Music 🎶</button>
+    </section>
+  </div>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Lora', serif;
+      background: url('https://www.toptal.com/designers/subtlepatterns/uploads/victorian_pattern.png') fixed, linear-gradient(180deg, rgba(139, 90, 43, 0.3), rgba(255, 245, 238, 0.5));
+      background-size: cover, auto;
+      color: #4A2F2F;
+      line-height: 1.6;
+      overflow-x: hidden;
+      cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="%23FF6F61" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>'), auto;
+    }
+    .container {
+      max-width: 1100px;
+      margin: 30px auto;
+      padding: 30px;
+      background: rgba(255, 245, 238, 0.98);
+      border: 4px solid #8B5A2B;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 0 10px rgba(139, 90, 43, 0.2);
+      animation: fadeIn 1.5s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    header {
+      text-align: center;
+      padding: 20px;
+      background: linear-gradient(to bottom, #FFF5EE, #FFE4E1);
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      animation: slideDown 1s ease-in-out;
+    }
+    @keyframes slideDown {
+      from { transform: translateY(-50px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 4em;
+      color: #6B3E2E;
+      margin: 0;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    header p {
+      font-style: italic;
+      color: #8B5A2B;
+      font-size: 1.4em;
+    }
+    .gallery, .memory-lane, .chatbot {
+      margin: 30px 0;
+      padding: 20px;
+      background: #FFF5EE;
+      border-radius: 15px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+      animation: fadeInSection 1.5s ease-in-out;
+    }
+    @keyframes fadeInSection {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .gallery h2, .memory-lane h2, .chatbot h2 {
+      font-family: 'Playfair Display', serif;
+      color: #6B3E2E;
+      font-size: 2.2em;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      padding: 10px;
+    }
+    .gallery-item {
+      position: relative;
+      transition: transform 0.4s, box-shadow 0.4s;
+      animation: slideIn 1.2s ease-in-out;
+    }
+    @keyframes slideIn {
+      from { transform: translateX(-50px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    .gallery-item img, .gallery-item video {
+      width: 100%;
+      border: 3px solid #8B5A2B;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+    .gallery-item:hover {
+      transform: translateY(-5px) scale(1.05);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+    }
+    .gallery-item:hover::after {
+      content: '♥';
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 2.5em;
+      color: #FF6F61;
+      animation: floatHeart 1.2s ease-in-out infinite;
+    }
+    @keyframes floatHeart {
+      0% { transform: translateY(0); opacity: 1; }
+      50% { transform: translateY(-15px); opacity: 0.8; }
+      100% { transform: translateY(0); opacity: 1; }
+    }
+    .memory-lane p {
+      font-size: 1.2em;
+      text-align: center;
+      color: #4A2F2F;
+      padding: 20px;
+      background: #FFE4E1;
+      border-radius: 10px;
+    }
+    .chatbot {
+      position: relative;
+      overflow: hidden;
+    }
+    .chatbot::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 200%;
+      height: 100%;
+      background: linear-gradient(45deg, transparent, rgba(255, 111, 97, 0.3), transparent);
+      animation: shimmer 4s infinite;
+    }
+    @keyframes shimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+    #chat-container {
+      max-width: 700px;
+      margin: 0 auto;
+    }
+    #chat-output {
+      height: 350px;
+      overflow-y: auto;
+      border: 2px solid #8B5A2B;
+      padding: 15px;
+      background: #FFF5EE;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      position: relative;
+    }
+    #chat-output div {
+      animation: typeMessage 0.6s ease-in;
+      margin-bottom: 10px;
+    }
+    @keyframes typeMessage {
+      from { opacity: 0; width: 0; }
+      to { opacity: 1; width: 100%; }
+    }
+    .chat-inputs {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    #user-input, #poem-style {
+      width: 200px;
+      padding: 12px;
+      border: 2px solid #8B5A2B;
+      border-radius: 8px;
+      font-family: 'Lora', serif;
+      font-size: 1em;
+      background: #FFF5EE;
+    }
+    button {
+      padding: 12px 24px;
+      background: #6B3E2E;
+      color: #FFF5EE;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'Lora', serif;
+      font-size: 1em;
+      transition: background 0.3s, transform 0.2s, box-shadow 0.2s;
+    }
+    button:hover {
+      background: #8B5A2B;
+      transform: scale(1.1);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+    #poem-history {
+      margin-top: 20px;
+      padding: 15px;
+      background: #FFE4E1;
+      border-radius: 10px;
+    }
+    #poem-list {
+      list-style: none;
+      padding: 0;
+    }
+    #poem-list li {
+      padding: 10px;
+      border-bottom: 1px solid #8B5A2B;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    #poem-list li:hover {
+      background: #FFF5EE;
+    }
+    .audio-control {
+      text-align: center;
+      margin: 20px 0;
+    }
+    .confetti {
+      position: fixed;
+      width: 12px;
+      height: 12px;
+      background: #FF6F61;
+      opacity: 0.8;
+      animation: fall 4s linear infinite;
+    }
+    @keyframes fall {
+      0% { transform: translateY(-100vh) rotate(0deg); }
+      100% { transform: translateY(100vh) rotate(360deg); }
+    }
+    .confetti-burst {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: #FF6F61;
+      opacity: 0.7;
+      animation: burst 1.5s ease-out forwards;
+    }
+    @keyframes burst {
+      0% { transform: translate(0, 0); opacity: 1; }
+      100% { transform: translate(calc(50vw - 50%), calc(50vh - 50%)); opacity: 0; }
+    }
+  </style>
+
+  <script src="https://apis.google.com/js/api.js"></script>
+  <script>
+    let apiReady = false;
+    let retryCount = 0;
+    const maxRetries = 3;
+    let audio = null;
+
+    // Mock responses for fallback
+    const mockResponses = {
+      chat: [
+        "Hey Sandra, you’re absolutely glowing today! What’s making your birthday so special? 😊",
+        "Sandra, my heart skips a beat just thinking of you. What’s on your mind? 💖",
+        "Yo, Sandra, you’re making my day! How’s the birthday queen doing? 😘"
+      ],
+      poems: {
+        romantic: "Sandra, your smile is my sunrise, warming my soul. Every moment with you feels like a dream I never want to wake from. You’re my heart’s delight.",
+        sonnet: "Shall I compare thee, Sandra, to a star? Thy light doth shine where darkness dares to creep. My heart, enthralled, doth wander near and far, Yet finds its home in love so pure and deep.",
+        haiku: "Sandra’s eyes, a spark, Light my heart in evening’s glow, Forever my home.",
+        "free verse": "Sandra, you’re a melody, soft and sweet, weaving through my dreams. My heart dances to your laugh, longing for just one smile to call my own."
+      }
+    };
+
+    // Load Google API client with retries
+    function loadGapi() {
+      return new Promise((resolve, reject) => {
+        gapi.load('client', {
+          callback: () => {
+            gapi.client.init({
+              apiKey: 'AIzaSyAan2tQdYWnGqKVunZdJDt-lNTQr3ZQeww',
+              discoveryDocs: ['https://generativelanguage.googleapis.com/$discovery/rest?version=v1beta'],
+            }).then(() => {
+              console.log('Google API client initialized successfully');
+              apiReady = true;
+              document.getElementById('retry-button').style.display = 'none';
+              resolve();
+            }).catch((error) => {
+              console.error('API initialization failed:', JSON.stringify(error, null, 2));
+              if (retryCount < maxRetries) {
+                retryCount++;
+                console.log(`Retrying API initialization (${retryCount}/${maxRetries})...`);
+                setTimeout(() => loadGapi().then(resolve).catch(reject), 2000);
+              } else {
+                console.error('Max retries reached. Using mock responses.');
+                document.getElementById('retry-button').style.display = 'inline-block';
+                reject('Oh no, Sandra, my connection’s a bit shy today! Try the retry button or ask [Your Name] to check the API key. I’ll still share my heart with you! 💖');
+              }
+            });
+          },
+          onerror: () => {
+            console.error('Failed to load Google API client script');
+            document.getElementById('retry-button').style.display = 'inline-block';
+            reject('Sandra, my tech’s acting up! Ask [Your Name] to fix the magic. For now, I’ve got sweet words ready for you! 😊');
+          }
+        });
+      });
+    }
+
+    // Retry API connection
+    function retryApi() {
+      retryCount = 0;
+      appendMessage('Green', 'Trying to reconnect, Sandra... fingers crossed! 😊');
+      loadGapi().then(() => {
+        appendMessage('Green', 'We’re back in action, Sandra! What’s next? 💖');
+      }).catch((error) => {
+        appendMessage('Green', error);
+      });
+    }
+
+    // Initialize API, confetti, and audio
+    window.onload = async () => {
+      try {
+        await loadGapi();
+        appendMessage('Green', 'Hey Sandra, happy birthday! You’re absolutely stunning, and I’m here to make your day even better with chats or poems! 😊');
+      } catch (error) {
+        appendMessage('Green', error);
+      }
+      // Confetti animation
+      for (let i = 0; i < 50; i++) {
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti';
+        confetti.style.left = Math.random() * 100 + 'vw';
+        confetti.style.animationDelay = Math.random() * 2 + 's';
+        document.body.appendChild(confetti);
+      }
+      // Initialize audio
+      audio = new Audio('https://www.bensound.com/bensound-music/bensound-tenderness.mp3'); // Fallback piano music
+      audio.loop = true;
+      audio.volume = 0.3;
+    };
+
+    // Toggle background music
+    function toggleMusic() {
+      const button = document.getElementById('music-toggle');
+      if (audio.paused) {
+        audio.play().catch(() => {
+          appendMessage('Green', 'Oops, Sandra, the music’s shy! Try clicking again. 😅');
+        });
+        button.textContent = 'Pause Music 🎶';
+      } else {
+        audio.pause();
+        button.textContent = 'Play Music 🎶';
+      }
+    }
+
+    // Chatbot functionality
+    function sendMessage() {
+      const userInput = document.getElementById('user-input').value;
+      if (!userInput.trim()) return;
+      appendMessage('You', userInput);
+      if (!apiReady) {
+        appendMessage('Green', mockResponses.chat[Math.floor(Math.random() * mockResponses.chat.length)]);
+        return;
+      }
+      fetchResponse(userInput);
+      document.getElementById('user-input').value = '';
+    }
+
+    function generatePoem() {
+      const poemStyle = document.getElementById('poem-style').value;
+      if (!apiReady) {
+        appendMessage('Green', `Here’s a ${poemStyle} poem for you, Sandra, straight from my heart! 💖<br>${mockResponses.poems[poemStyle]}`);
+        savePoem(mockResponses.poems[poemStyle], poemStyle);
+        triggerConfetti();
+        return;
+      }
+      const prompt = `You are Green, a guy totally head-over-heels for Sandra. Write a heartfelt poem for Sandra in a ${poemStyle} style, expressing your admiration and crush on her. Keep it sweet, romantic, and appropriate.`;
+      appendMessage('Green', `Writing you a ${poemStyle} poem, Sandra... hold on! 💖`);
+      fetchResponse(prompt, poemStyle);
+      triggerConfetti();
+    }
+
+    function surprisePoem() {
+      const styles = ['romantic', 'sonnet', 'haiku', 'free verse'];
+      const poemStyle = styles[Math.floor(Math.random() * styles.length)];
+      if (!apiReady) {
+        appendMessage('Green', `Surprise, Sandra! Here’s a ${poemStyle} poem from my heart! 💖<br>${mockResponses.poems[poemStyle]}`);
+        savePoem(mockResponses.poems[poemStyle], poemStyle);
+        triggerConfetti();
+        return;
+      }
+      const prompt = `You are Green, a guy totally head-over-heels for Sandra. Write a heartfelt poem for Sandra in a ${poemStyle} style, expressing your admiration and crush on her. Keep it sweet, romantic, and appropriate.`;
+      appendMessage('Green', `Surprise, Sandra! Writing you a ${poemStyle} poem... hope you love it! 💖`);
+      fetchResponse(prompt, poemStyle);
+      triggerConfetti();
+    }
+
+    function triggerConfetti() {
+      for (let i = 0; i < 30; i++) {
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti-burst';
+        confetti.style.left = Math.random() * 100 + 'vw';
+        confetti.style.animationDelay = Math.random() * 0.5 + 's';
+        document.body.appendChild(confetti);
+        setTimeout(() => confetti.remove(), 1500);
+      }
+    }
+
+    function savePoem(poem, style) {
+      const poems = JSON.parse(localStorage.getItem('sandraPoems') || '[]');
+      poems.push({ style, poem, date: new Date().toLocaleString() });
+      localStorage.setItem('sandraPoems', JSON.stringify(poems));
+      updatePoemHistory();
+    }
+
+    function updatePoemHistory() {
+      const poemList = document.getElementById('poem-list');
+      poemList.innerHTML = '';
+      const poems = JSON.parse(localStorage.getItem('sandraPoems') || '[]');
+      poems.forEach((p, i) => {
+        const li = document.createElement('li');
+        li.textContent = `${p.date} - ${p.style.charAt(0).toUpperCase() + p.style.slice(1)} Poem`;
+        li.onclick = () => appendMessage('Green', `Revisiting your ${p.style} poem, Sandra! 💖<br>${p.poem}`);
+        poemList.appendChild(li);
+      });
+    }
+
+    function appendMessage(sender, message) {
+      const chatOutput = document.getElementById('chat-output');
+      const messageDiv = document.createElement('div');
+      messageDiv.innerHTML = `<strong>${sender}:</strong> ${message.replace(/\n/g, '<br>')}`;
+      chatOutput.appendChild(messageDiv);
+      chatOutput.scrollTop = chatOutput.scrollHeight;
+    }
+
+    async function fetchResponse(prompt, poemStyle = null) {
+      try {
+        const response = await gapi.client.generativelanguage.models.generateContent({
+          model: 'gemini-1.5-flash',
+          contents: [{
+            role: 'user',
+            parts: [{ text: `You are Green, a guy with a huge crush on Sandra. Speak in a modern, flirty, and sweet tone. Respond to "${prompt}" with heartfelt, romantic language, always keeping it respectful and charming. If asked for a poem, write one in the specified style. Otherwise, chat as Green, totally smitten with Sandra.` }]
+          }]
+        });
+        const text = response.result.candidates[0].content.parts[0].text;
+        appendMessage('Green', text);
+        if (poemStyle) savePoem(text, poemStyle);
+      } catch (error) {
+        console.error('Error fetching response:', JSON.stringify(error, null, 2));
+        appendMessage('Green', mockResponses.chat[Math.floor(Math.random() * mockResponses.chat.length)]);
+        document.getElementById('retry-button').style.display = 'inline-block';
+      }
+    }
+
+    // Handle Enter key for sending messages
+    document.getElementById('user-input').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') sendMessage();
+    });
+
+    // Initialize poem history
+    updatePoemHistory();
+  </script>
+</body>
+</html>
